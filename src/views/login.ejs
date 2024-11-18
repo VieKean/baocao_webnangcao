@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý cửa hàng của bạn - Báo Gear</title>
+    <link rel="stylesheet" href="/css/login.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="logo">
+            <img src="/images/logo.jpg" alt="Báo Gear Logo">
+        </div>
+        <h1>QUẢN LÝ CỬA HÀNG CỦA BẠN</h1>
+        <% if (typeof message !=='undefined' ) { %>
+            <div class="error-message">
+                <%= message %>
+            </div>
+            <% } %>
+
+
+                <form action="/login" method="POST">
+                    <div class="form-group">
+                        <input type="text" name="username" placeholder="Tài khoản của bạn" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" name="password" placeholder="Mật khẩu đăng nhập cửa hàng" required>
+                    </div>
+                    <button type="submit">Đăng nhập</button>
+                </form>
+    </div>
+</body>
+
+</html>

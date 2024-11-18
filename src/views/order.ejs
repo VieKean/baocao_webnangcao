@@ -1,0 +1,104 @@
+<table class="table table-hover table-bordered">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Customer Name</th>
+            <th scope="col">Order Date</th>
+            <th scope="col">Total Price</th>
+            <th scope="col">Payment Method</th>
+            <th scope="col">Total Products</th>
+            <th scope="col">Status</th>
+            <th scope="col">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        <% for (let index = 0; index < data.rows.length; index++) { const order = data.rows[index]; %>
+            <tr>
+                <th scope="row"><%= index + 1 %></th>
+                <td><%= order.Customer?.full_name || 'Unknown Customer' %></td>
+                <td><%= order.order_date ? order.order_date.toISOString().split('T')[0] : 'N/A' %></td>
+                <td>$<%= order.total_price ? order.total_price.toFixed(2) : '0.00' %></td>
+                <td><%= order.payment_method || 'Unknown' %></td>
+                <td><%= order.total_products %></td>
+                <td>
+                    <form action="/order/update-status/<%= order.id %>" method="POST">
+                        <input type="hidden" name="id" value="<%= order.id %>">
+
+                        <!-- Hiển thị trạng thái hiện tại -->
+                        <p><strong>Current Status: </strong><%= order.status.charAt(0).toUpperCase() + order.status.slice(1) %></p>
+
+                        <!-- Dropdown để thay đổi trạng thái -->
+                        <select name="status" class="form-select form-select-sm" onchange="showUpdateButton(this)">
+                            <option value="pending" <%= order.status === 'pending' ? 'selected' : '' %>>Pending</option>
+                            <option value="processing" <%= order.status === 'processing' ? 'selected' : '' %>>Processing</option>
+                            <option value="shipped" <%= order.status === 'shipped' ? 'selected' : '' %>>Shipped</option>
+                            <option value="delivered" <%= order.status === 'delivered' ? 'selected' : '' %>>Delivered</option>
+                            <option value="cancelled" <%= order.status === 'cancelled' ? 'selected' : '' %>>Cancelled</option>
+                        </select>
+
+                        <!-- Trường nhập liệu cho "updatedBy" (read-only) -->
+                        <input type="text" name="updatedBy" value="<%= data.username %>" class="form-control form-control-sm mt-2" readonly style="display:none;">
+
+                        <!-- Trường nhập liệu cho "changeReason" (hidden initially) -->
+                        <textarea name="changeReason" class="form-control form-control-sm mt-2" placeholder="Reason for status change" rows="3" style="display:none;"></textarea>
+
+                        <!-- Nút Update sẽ được ẩn mặc định -->
+                        <input type="submit" id="updateButton<%= order.id %>" class="btn btn-success btn-sm mt-2" value="Update" style="display:none;">
+
+                        <!-- Nút Cancel để hủy -->
+                        <button type="button" id="cancelButton<%= order.id %>" class="btn btn-secondary btn-sm mt-2" onclick="cancelUpdate('<%= order.id %>')" style="display:none;">Cancel</button>
+
+                    </form>
+                </td>
+
+                <td>
+                    <!-- Nút View Detail -->
+                    <a href="/order/view/<%= order.id %>" class="btn btn-primary btn-sm">
+                        View Detail
+                    </a>
+                </td>
+            </tr>
+        <% } %>
+    </tbody>
+</table>
+
+<script>
+    function showUpdateButton(selectElement) {
+        // Lấy giá trị trạng thái đã chọn
+        const selectedStatus = selectElement.value;
+        // Lấy trạng thái ban đầu
+        const currentStatus = selectElement.querySelector('option[selected]').value;
+
+        // Lấy form, nút submit và cancel dựa trên ID duy nhất
+        const form = selectElement.closest('form');
+        const updateButton = form.querySelector('input[type="submit"]');
+        const cancelButton = form.querySelector('button[type="button"]');
+        const changeReasonField = form.querySelector('textarea[name="changeReason"]');
+        const updatedByField = form.querySelector('input[name="updatedBy"]');
+
+        // Hiển thị nút Update, Cancel, trường "changeReason" và "updatedBy" nếu trạng thái thay đổi
+        if (selectedStatus !== currentStatus) {
+            updateButton.style.display = 'inline-block';
+            cancelButton.style.display = 'inline-block';
+            changeReasonField.style.display = 'block'; // Hiển thị lý do thay đổi trạng thái
+            updatedByField.style.display = 'block';  // Hiển thị trường updatedBy
+        } else {
+            updateButton.style.display = 'none';
+            cancelButton.style.display = 'none';
+            changeReasonField.style.display = 'none'; // Ẩn lý do thay đổi trạng thái
+            updatedByField.style.display = 'none'; // Ẩn trường updatedBy
+        }
+    }
+
+    function cancelUpdate(orderId) {
+        // Khi nhấn Cancel, làm lại dropdown về trạng thái ban đầu
+        const form = document.querySelector(`form[action="/order/update-status/${orderId}"]`);
+        const select = form.querySelector('select');
+        const currentStatus = form.querySelector('p').textContent.split(': ')[1].toLowerCase(); // Lấy trạng thái ban đầu
+        select.value = currentStatus; // Đặt lại giá trị của dropdown về trạng thái cũ
+        form.querySelector('input[type="submit"]').style.display = 'none'; // Ẩn nút Update
+        form.querySelector('button[type="button"]').style.display = 'none'; // Ẩn nút Cancel
+        form.querySelector('textarea[name="changeReason"]').style.display = 'none'; // Ẩn lý do thay đổi trạng thái
+        form.querySelector('input[name="updatedBy"]').style.display = 'none'; // Ẩn trường updatedBy
+    }
+</script>
