@@ -9,5 +9,15 @@ const fetchAllProducts = async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 }
+const getProductById = async (req, res) => {
+    try {
+        const productId = req.params.id;
+        const product = await productService.getProductById(productId);
+        res.status(200).json(product);
+    } catch (err) {
+        console.error('Failed to fetch product:', err);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
 
-export default { fetchAllProducts }
+export default { fetchAllProducts, getProductById };

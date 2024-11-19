@@ -8,9 +8,9 @@ const getCounts = async () => {
             db.Customer.count()
         ]);
         return {
-            totalAccounts: countOrder,
+            totalAccounts: countAccount,
             totalProducts: countProduct,
-            totalOrders: countAccount,
+            totalOrders: countOrder,
             totalCustomers: countCustomer
         };
     } catch (error) {

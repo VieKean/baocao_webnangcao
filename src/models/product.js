@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
       Product.hasMany(models.OrderDetail, { foreignKey: 'product_id' });
 
       // Add the reverse association: Product belongs to Category
-      Product.belongsTo(models.Category, { foreignKey: 'category_id', as: 'category' }); // Adding this line
+      Product.belongsTo(models.Category, { foreignKey: 'category_id'}); // Adding this line
     }
   };
   Product.init({

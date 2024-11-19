@@ -38,6 +38,26 @@ const createNewAccount = async (username, password, fullname, address, phonenumb
     }
 };
 
+const createNewCustomer = async (username, password, fullname, address, phonenumber, email, role) => {
+    try {
+        const hashedPassword = hashPassword(password);
+        const newAccount = await db.Customer.create({
+            username,
+            password: hashedPassword,
+            full_name: fullname,
+            address,
+            phone_number: phonenumber,
+            email,
+            role,
+            creation_date: new Date()
+        });
+        return newAccount;
+    } catch (error) {
+        console.error('Error creating account:', error);
+        throw error;
+    }
+};
+
 const deleteAccount = async (id) => {
     try {
         await db.Account.destroy({ where: { id } });
@@ -82,5 +102,19 @@ const checkLogin = async (username, password) => {
         throw error;
     }
 };
+const checkLoginCustomer = async (username, password) => {
+    try {
+        const account = await db.Customer.findOne({ where: { username } });
+        if (account) {
+            const isPasswordValid = bcrypt.compareSync(password, account.password);
+            return isPasswordValid ? account : null;
+        }
+        return null;
+    } catch (error) {
+        console.error('Error checking login:', error);
+        throw error;
+    }
+};
 
-export default { getAllAccounts, createNewAccount, deleteAccount, getAccountById, updateAccount, checkLogin };
+
+export default { getAllAccounts, createNewAccount, deleteAccount, getAccountById, updateAccount, checkLogin , createNewCustomer, checkLoginCustomer };

@@ -23,7 +23,7 @@
         <tbody>
             <% for (let i = 0; i < data.rows.length; i++) { 
                 const product = data.rows[i]; 
-                const category = product.category ? product.category.category_name : 'Unknown';
+                const category = product.Category ? product.Category.category_name : 'Unknown';
             %>
                 <tr>
                     <th scope="row"><%= i + 1 %></th>

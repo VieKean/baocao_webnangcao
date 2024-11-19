@@ -5,8 +5,8 @@ const getAllProducts = async () => {
         const products = await db.Product.findAll({
             include: [{
                 model: db.Category,
-                attributes: ['category_name'],
-                as: 'category'
+                attributes: ['category_name']
+                
             }]
         });
         return products;
@@ -44,13 +44,26 @@ const deleteProduct = async (productId) => {
 
 const getProductById = async (productId) => {
     try {
-        const product = await db.Product.findByPk(productId);
+        const product = await db.Product.findByPk(productId, {
+            include: [
+                {
+                    model: db.Category, // Liên kết với model Category
+                    attributes: ['category_name'], // Chỉ lấy cột category_name
+                },
+            ],
+        });
+
+        if (!product) {
+            throw new Error('Product not found');
+        }
+
         return product;
     } catch (error) {
         console.error('Error fetching product:', error);
         throw error;
     }
 };
+
 
 const updateProduct = async (productId, product_name, price, category_id, image, description, quantity) => {
     try {
@@ -64,7 +77,7 @@ const updateProduct = async (productId, product_name, price, category_id, image,
         throw error;
     }
 };
-
+// Lấy dữ liệu cơ sở dữ liệu theo category
 
 
 
