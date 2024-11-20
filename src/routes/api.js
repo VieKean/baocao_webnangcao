@@ -7,7 +7,7 @@ import apiCategoryController from '../controllers/apiCategoryController'
 
 const initAPIRoute = (app) => {
   // User routes
-  router.post('/login', apiUserController.handleLogin); 
+  router.post('/login', apiUserController.handleLoginApi); 
   router.post('/register', apiUserController.handleRegister);
   router.post('/logout', apiUserController.handleLogout);
 

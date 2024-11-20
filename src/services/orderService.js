@@ -113,6 +113,38 @@ const getOrderStatusHistory = async (orderId) => {
 };
 
 
+const createOrder = async (orderData) => {
+    try {
+        // Insert order
+        const orderResult = await db.Order.create({
+            customer_id: orderData.customer_id,
+            order_date: orderData.order_date,
+            total_price: orderData.total_price,
+            payment_method: orderData.payment_method,
+            status: orderData.status,
+            total_products: orderData.total_products,
+        });
+
+        const orderId = orderResult.id;
+
+        // Insert order details
+        for (const detail of orderData.orderDetails) {
+            await db.OrderDetail.create({
+                order_id: orderId,
+                product_id: detail.product_id,
+                quantity: detail.quantity,
+                shipping_address: detail.shipping_address,
+                order_notes: detail.order_notes,
+            });
+        }
+
+        return { success: true, orderId };
+    } catch (error) {
+        console.error('Error creating order:', error);
+        throw error;
+    }
+};
 
 
-export default { getAllOrders, updateOrderStatus, getDetailById, getOrderStatusHistory };
+
+export default { getAllOrders, updateOrderStatus, getDetailById, getOrderStatusHistory, createOrder };
